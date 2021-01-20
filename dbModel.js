@@ -7,7 +7,6 @@ const debateSchema = mongoose.Schema({
     topics: [String],
     imageUrl: String, 
     date: Date,
-    color: String, 
     person1img: String, 
     person2img: String,  
     person1description: String,  

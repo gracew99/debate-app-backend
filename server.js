@@ -1,6 +1,5 @@
 import express from 'express'
 import mongoose from 'mongoose'
-import Data from './data.js'
 import DebatePosts from './dbModel.js'
 
 const app = express()
@@ -44,17 +43,20 @@ app.get('/v2/posts', (req, res) => {
     });
 })
 
+// return list of topics to be rendered by DebateTopicList component
 app.get('/v2/topics', (req, res) => {
     DebatePosts.find({}, function(err, data){
         if (err) {
             res.status(500).send(err);
         } else {
-            // const topics = []
-            // data.forEach(item => {
-            //     topics.push(item.topics)
-            // })
-            const topics = data.map(item => item.topics);
-           res.status(200).send(topics);
+            const topicSet = new Set();
+            data.forEach(item => {
+                item.topics.forEach(topic => {
+                    topicSet.add(topic);
+                })
+            })
+            const topicsArr = [...topicSet];
+           res.status(200).send(topicsArr);
         }
     });
 })
@@ -88,8 +90,6 @@ app.get('/v2/posts/:topic/:title', (req, res) => {
     const topic = req.params.topic;
     const title = req.params.title;
 
-    console.log("topic" + topic)
-    console.log("title " + title)
     DebatePosts.find({topics: topic, title: title}, function(err, data){
         if (err) {
             res.status(500).send(err);
