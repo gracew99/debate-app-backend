@@ -3,9 +3,10 @@ import mongoose from 'mongoose'
 const debateSchema = mongoose.Schema({
     person1: String, 
     person2: String, 
-    topic: String, 
+    title: String, 
+    topics: [String],
     imageUrl: String, 
-    date: String,
+    date: Date,
     color: String, 
     person1img: String, 
     person2img: String,  
