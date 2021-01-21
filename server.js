@@ -12,6 +12,7 @@ app.use((req, res, next) => {
     next();
 })
 
+
 const connection_url = "mongodb+srv://admin:mv2kiH58dYfmXvfV@cluster0.b3bgw.mongodb.net/debate";
 mongoose.connect(connection_url, {
     useNewUrlParser: true,
@@ -19,29 +20,6 @@ mongoose.connect(connection_url, {
     useUnifiedTopology: true
 })
 
-app.get('/', (req, res) => {
-    res.status(200).send('hello')
-})
-
-app.get('/topics', (req, res) => {
-    res.status(200).send('hello')
-})
-
-
-app.get('/v1/posts', (req, res) => {
-    res.status(200).send(Data)
-})
-
-app.get('/v2/posts', (req, res) => {
-    DebatePosts.find({}, function(err, data){
-        if (err) {
-            res.status(500).send(err);
-        } else {
-           res.status(200).send(data);
-
-        }
-    });
-})
 
 // return list of topics to be rendered by DebateTopicList component
 app.get('/v2/topics', (req, res) => {
@@ -61,20 +39,29 @@ app.get('/v2/topics', (req, res) => {
     });
 })
 
+// get all upcoming debates in chronological order for a certain topic
+app.get('/v2/topics/:topicName', (req, res) => {
+    const topic = req.params.topicName;
+    
+    var getDebates = function(topic, callback) {
+        DebatePosts.find({date : {$gte: new Date().setHours(0,0,0,0)}}, (err, data) => {})
+            .where("topics", topic)
+            .sort("date")
+            .exec((err, data) => {
+                callback(err, data);
+            });
+    };
 
-app.get('/v2/debates/:topic', (req, res) => {
-    const topic = req.params.topic;
-    DebatePosts.find({topics: topic }, function(err, data){
-        if (err) {
+    getDebates(topic, function(err, data) {
+        if (err) { 
             res.status(500).send(err);
         } else {
-           res.status(200).send(data);
-
+            res.status(200).send(data)
         }
     });
 })
 
-
+// register a new debate
 app.post('/v2/posts', (req, res) => {
     const dbDebatePosts = req.body;
     DebatePosts.create(dbDebatePosts, (err, data) => {
@@ -86,11 +73,12 @@ app.post('/v2/posts', (req, res) => {
         }
     })
 })
-app.get('/v2/posts/:topic/:title', (req, res) => {
-    const topic = req.params.topic;
-    const title = req.params.title;
 
-    DebatePosts.find({topics: topic, title: title}, function(err, data){
+// get details for a specific debate
+app.get('/v2/debates/:debateId', (req, res) => {
+
+    const id = req.params.debateId;
+    DebatePosts.find({_id: id}, function(err, data){
         if (err) {
             res.status(500).send(err);
         } else {
