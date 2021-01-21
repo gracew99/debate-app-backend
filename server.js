@@ -34,6 +34,7 @@ app.get('/v2/topics', (req, res) => {
                 })
             })
             const topicsArr = [...topicSet];
+            topicsArr.sort();
            res.status(200).send(topicsArr);
         }
     });
@@ -88,6 +89,32 @@ app.get('/v2/debates/:debateId', (req, res) => {
     });
 })
 
+// get number of attendees
+app.get('/v2/debates/signUp/:debateId', (req, res) => {
+    const debateId = req.params.debateId;
+    DebatePosts.find( { _id: debateId }, (err, data) => {
+        if (err){
+            res.status(500).send(err)
+            console.log(err)
+        } else{
+            const attendees = data[0].attendees ? data[0].attendees : 0;
+            res.status(200).send(attendees.toString()) 
+        }
+    });
+})
+
+// sign up to attend a debate
+app.post('/v2/debates/signUp/:debateId', (req, res) => {
+    const debateId = req.params.debateId;
+    DebatePosts.updateOne( { _id: debateId },{ $inc: { attendees: 1 }}, (err, data) => {
+        if (err){
+            res.status(500).send(err)
+            console.log(err)
+        } else{
+            res.sendStatus(201) 
+        }
+    });
+})
 
 app.listen(port, () => {
     console.log('listening on port ' + port)

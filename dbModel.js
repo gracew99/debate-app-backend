@@ -11,7 +11,7 @@ const debateSchema = mongoose.Schema({
     person2img: String,  
     person1description: String,  
     person2description: String, 
-
+    attendees: Number
 });
 
 export default mongoose.model('debatePosts', debateSchema);
