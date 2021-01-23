@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
 const debateSchema = mongoose.Schema({
     person1: String, 
@@ -11,7 +11,8 @@ const debateSchema = mongoose.Schema({
     person2img: String,  
     person1description: String,  
     person2description: String, 
-    attendees: Number
+    attendees: Number,
+    password: String
 });
 
-export default mongoose.model('debatePosts', debateSchema);
+module.exports = mongoose.model('debatePosts', debateSchema);
