@@ -29,7 +29,8 @@ mongoose.connect(connection_url, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
-})
+}).then(connect => console.log('connected to mongodb..'))
+  .catch(e => console.log('could not connect to mongodb', e))
 
 
 const sendTokenResponse = (token, res) => {
